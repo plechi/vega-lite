@@ -5,6 +5,7 @@ import {BaseMarkConfig, Color} from './vega.schema';
 
 export const AREA: 'area' = 'area';
 export const BAR: 'bar' = 'bar';
+export const IMAGE: 'image' = 'image';
 export const LINE: 'line' = 'line';
 export const POINT: 'point' = 'point';
 export const RECT: 'rect' = 'rect';
@@ -23,6 +24,7 @@ export type Mark =
   | typeof AREA
   | typeof BAR
   | typeof LINE
+  | typeof IMAGE
   | typeof TRAIL
   | typeof POINT
   | typeof TEXT
@@ -37,6 +39,7 @@ export type Mark =
 const MARK_INDEX: {[M in Mark]: 1} = {
   area: 1,
   bar: 1,
+  image: 1,
   line: 1,
   point: 1,
   text: 1,
@@ -162,6 +165,7 @@ export const VL_ONLY_MARK_SPECIFIC_CONFIG_PROPERTY_INDEX: {
   area: ['line', 'point'],
   bar: ['binSpacing', 'continuousBandSize', 'discreteBandSize'],
   rect: ['binSpacing', 'continuousBandSize', 'discreteBandSize'],
+  image: ['binSpacing', 'continuousBandSize', 'discreteBandSize'],
   line: ['point'],
   text: ['shortTimeLabels'],
   tick: ['bandSize', 'thickness']
@@ -185,6 +189,9 @@ export interface MarkConfigMixins {
 
   /** Circle-Specific Config */
   circle?: MarkConfig;
+
+  /** Image-specific Config */
+  image?: RectConfig;
 
   /** Line-Specific Config */
   line?: LineConfig;

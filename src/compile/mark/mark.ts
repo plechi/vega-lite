@@ -12,6 +12,7 @@ import {area} from './area';
 import {bar} from './bar';
 import {MarkCompiler} from './base';
 import {geoshape} from './geoshape';
+import {image} from './image';
 import {line, trail} from './line';
 import {circle, point, square} from './point';
 import {rect} from './rect';
@@ -24,6 +25,7 @@ const markCompiler: {[m in Mark]: MarkCompiler} = {
   bar,
   circle,
   geoshape,
+  image,
   line,
   point,
   rect,
@@ -173,6 +175,7 @@ export function pathGroupingFields(mark: Mark, encoding: Encoding<string>): stri
       case 'y':
       case 'order':
       case 'href':
+      case 'url':
       case 'x2':
       case 'y2':
       // falls through
@@ -228,9 +231,6 @@ export function pathGroupingFields(mark: Mark, encoding: Encoding<string>): stri
         }
         return details;
       }
-
-      default:
-        throw new Error(`Bug: Channel ${channel} unimplemented for line mark`);
     }
   }, []);
 }

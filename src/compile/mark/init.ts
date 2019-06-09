@@ -4,7 +4,24 @@ import {isContinuous, isFieldDef, TypedFieldDef} from '../../channeldef';
 import {Config} from '../../config';
 import {Encoding, isAggregate} from '../../encoding';
 import * as log from '../../log';
-import {AREA, BAR, CIRCLE, isMarkDef, LINE, Mark, MarkDef, POINT, RECT, RULE, SQUARE, TEXT, TICK} from '../../mark';
+import {
+  AREA,
+  BAR,
+  CIRCLE,
+  GEOSHAPE,
+  IMAGE,
+  isMarkDef,
+  LINE,
+  Mark,
+  MarkDef,
+  POINT,
+  RECT,
+  RULE,
+  SQUARE,
+  TEXT,
+  TICK,
+  TRAIL
+} from '../../mark';
 import {QUANTITATIVE, TEMPORAL} from '../../type';
 import {contains, getFirstDefined} from '../../util';
 import {getMarkConfig} from '../common';
@@ -63,19 +80,18 @@ function filled(markDef: MarkDef, config: Config) {
 }
 
 function orient(mark: Mark, encoding: Encoding<string>, specifiedOrient: Orientation): Orientation {
-  switch (mark) {
-    case POINT:
-    case CIRCLE:
-    case SQUARE:
-    case TEXT:
-    case RECT:
-      // orient is meaningless for these marks.
-      return undefined;
-  }
-
   const {x, y, x2, y2} = encoding;
 
   switch (mark) {
+    case CIRCLE:
+    case IMAGE:
+    case GEOSHAPE:
+    case POINT:
+    case RECT:
+    case SQUARE:
+    case TEXT:
+      // orient is meaningless for these marks.
+      return undefined;
     case BAR:
       if (isFieldDef(x) && isBinned(x.bin)) {
         return 'vertical';
@@ -132,6 +148,7 @@ function orient(mark: Mark, encoding: Encoding<string>, specifiedOrient: Orienta
 
     // falls through
     case LINE:
+    case TRAIL:
     case TICK: {
       // Tick is opposite to bar, line, area and never have ranged mark.
       const xIsContinuous = isFieldDef(encoding.x) && isContinuous(encoding.x);
@@ -177,5 +194,4 @@ function orient(mark: Mark, encoding: Encoding<string>, specifiedOrient: Orienta
       }
     }
   }
-  return 'vertical';
 }

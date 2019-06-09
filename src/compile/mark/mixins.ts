@@ -110,10 +110,10 @@ export function color(model: UnitModel): VgEncodeEntry {
   return {};
 }
 
-export type Ignore = Record<'size' | 'orient', 'ignore' | 'include'>;
+export type Ignore = Record<'color' | 'size' | 'orient', 'ignore' | 'include'>;
 
 export function baseEncodeEntry(model: UnitModel, ignore: Ignore) {
-  const {fill, stroke} = color(model);
+  const {fill = undefined, stroke = undefined} = ignore.color === 'include' ? color(model) : {};
   return {
     ...markDefProperties(model.markDef, ignore),
     ...wrapAllFieldsInvalid(model, 'fill', fill),
@@ -310,7 +310,7 @@ export function tooltip(model: UnitModel, opt: {reactiveGeom?: boolean} = {}) {
   }
 }
 
-export function text(model: UnitModel, channel: 'text' | 'href' = 'text') {
+export function text(model: UnitModel, channel: 'text' | 'href' | 'url' = 'text') {
   const channelDef = model.encoding[channel];
   return wrapCondition(model, channelDef, channel, cDef => ref.text(cDef, model.config));
 }

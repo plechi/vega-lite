@@ -204,6 +204,7 @@ export const defaultConfig: Config = {
   bar: mark.defaultBarConfig,
   circle: {},
   geoshape: {},
+  image: mark.defaultRectConfig,
   line: {},
   point: {},
   rect: mark.defaultRectConfig,
