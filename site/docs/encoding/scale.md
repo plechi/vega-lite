@@ -65,7 +65,7 @@ By default, Vega-Lite use the following scale types for the following [data type
 </span>
 <span class="note-line">
 <sup>2</sup> For positional (x and y) ordinal and ordinal fields, `"point"` is the default scale type for all marks except
-bar and rect marks, which use `"band"` scales.
+bar, image, and rect marks, which use `"band"` scales.
 </span>
 
 {:#domain}
