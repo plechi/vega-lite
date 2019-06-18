@@ -1,6 +1,6 @@
 import {array, isArray, isObject, isString} from 'vega-util';
 import {isBinned, isBinning} from '../../bin';
-import {Channel, NonPositionScaleChannel, SCALE_CHANNELS, ScaleChannel, X, X2, Y2} from '../../channel';
+import {Channel, NonPositionScaleChannel, ScaleChannel, SCALE_CHANNELS, X, X2, Y2} from '../../channel';
 import {
   ChannelDef,
   getTypedFieldDef,
@@ -15,7 +15,7 @@ import * as log from '../../log';
 import {isPathMark, Mark, MarkDef} from '../../mark';
 import {hasContinuousDomain} from '../../scale';
 import {contains, Dict, getFirstDefined, keys} from '../../util';
-import {VG_MARK_CONFIGS, VgEncodeChannel, VgEncodeEntry, VgValueRef} from '../../vega.schema';
+import {VgEncodeChannel, VgEncodeEntry, VgValueRef, VG_MARK_CONFIGS} from '../../vega.schema';
 import {getMarkConfig} from '../common';
 import {expression} from '../predicate';
 import {assembleSelectionPredicate} from '../selection/assemble';
@@ -408,7 +408,7 @@ export function binPosition({
     y2: reverse ? spacing : 0
   };
   const channel2 = channel === X ? X2 : Y2;
-  if (isBinning(fieldDef.bin)) {
+  if (isBinning(fieldDef.bin) || fieldDef.timeUnit) {
     return {
       [channel2]: ref.bin({
         channel,

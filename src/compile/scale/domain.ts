@@ -297,6 +297,18 @@ function parseSingleChannelDomain(
         ];
       }
     }
+  } else if (fieldDef.timeUnit && util.contains(['time', 'utc'], scaleType)) {
+    const data = model.requestDataName(MAIN);
+    return [
+      {
+        data,
+        field: model.vgField(channel)
+      },
+      {
+        data,
+        field: model.vgField(channel, {suffix: 'end'})
+      }
+    ];
   } else if (sort) {
     return [
       {

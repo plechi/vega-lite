@@ -1,15 +1,17 @@
 import {vgField} from '../../channeldef';
 import {fieldExpr, TimeUnit} from '../../timeunit';
 import {TimeUnitTransform} from '../../transform';
-import {Dict, duplicate, hash, keys, vals} from '../../util';
+import {contains, Dict, duplicate, hash, keys, vals} from '../../util';
 import {VgFormulaTransform} from '../../vega.schema';
-import {ModelWithField} from '../model';
+import {isUnitModel, ModelWithField} from '../model';
 import {DataFlowNode} from './dataflow';
 
 export interface TimeUnitComponent {
   as: string;
   timeUnit: TimeUnit;
   field: string;
+
+  band?: boolean;
 }
 
 export class TimeUnitNode extends DataFlowNode {
@@ -23,11 +25,19 @@ export class TimeUnitNode extends DataFlowNode {
 
   public static makeFromEncoding(parent: DataFlowNode, model: ModelWithField) {
     const formula = model.reduceFieldDef(
-      (timeUnitComponent: TimeUnitComponent, fieldDef) => {
+      (timeUnitComponent: TimeUnitComponent, fieldDef, channel) => {
         const {timeUnit, field} = fieldDef;
         if (timeUnit) {
           const as = vgField(fieldDef, {forAs: true});
-          const component = {as, timeUnit, field};
+          const component = {
+            as,
+            timeUnit,
+            field,
+            band:
+              isUnitModel(model) &&
+              contains(['bar', 'rect', 'image'], model.mark) && // TODO: refactor this as isBandMark
+              contains(['x', 'y'], channel)
+          };
           timeUnitComponent[hash(component)] = component;
         }
         return timeUnitComponent;
@@ -76,12 +86,25 @@ export class TimeUnitNode extends DataFlowNode {
   }
 
   public assemble() {
-    return vals(this.formula).map(c => {
-      return {
+    const transforms: VgFormulaTransform[] = [];
+
+    for (const f of vals(this.formula)) {
+      const {timeUnit, field, as, band} = f;
+      transforms.push({
         type: 'formula',
-        as: c.as,
-        expr: fieldExpr(c.timeUnit, c.field)
-      } as VgFormulaTransform;
-    });
+        as,
+        expr: fieldExpr(timeUnit, field)
+      });
+
+      if (band) {
+        transforms.push({
+          type: 'formula',
+          as: as + '_end',
+          expr: fieldExpr(timeUnit, field, {end: true})
+        });
+      }
+    }
+
+    return transforms;
   }
 }

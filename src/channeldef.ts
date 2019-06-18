@@ -508,6 +508,7 @@ export function vgField(
           }
         } else if (timeUnit) {
           fn = String(timeUnit);
+          suffix = (opt.binSuffix || '') + (opt.suffix || '');
         }
       }
     }

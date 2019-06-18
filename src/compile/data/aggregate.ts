@@ -14,7 +14,7 @@ import {DataFlowNode} from './dataflow';
 type Measures = Dict<{[key in AggregateOp]?: Set<string>}>;
 
 function addDimension(dims: Set<string>, channel: Channel, fieldDef: FieldDef<string>, model: ModelWithField) {
-  if (isTypedFieldDef(fieldDef) && isBinning(fieldDef.bin)) {
+  if (isTypedFieldDef(fieldDef) && (isBinning(fieldDef.bin) || fieldDef.timeUnit)) {
     dims.add(vgField(fieldDef, {}));
     dims.add(vgField(fieldDef, {binSuffix: 'end'}));
 
