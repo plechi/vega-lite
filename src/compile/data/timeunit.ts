@@ -33,10 +33,7 @@ export class TimeUnitNode extends DataFlowNode {
             as,
             timeUnit,
             field,
-            band:
-              isUnitModel(model) &&
-              contains(['bar', 'rect', 'image'], model.mark) && // TODO: refactor this as isBandMark
-              contains(['x', 'y'], channel)
+            band: isUnitModel(model) && contains(['x', 'y'], channel)
           };
           timeUnitComponent[hash(component)] = component;
         }
