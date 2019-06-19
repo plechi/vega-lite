@@ -277,6 +277,27 @@ describe('compile/data/parse', () => {
       expect(result instanceof FlattenTransformNode).toBe(true);
     });
 
+    /*
+    it('should return a CountPatternTransformNode', () => {
+      const transform: Transform = {
+        field: 'a'
+      };
+      const model = parseUnitModel({
+        data: {values: []},
+        mark: 'point',
+        transform: [transform],
+        encoding: {
+          x: {field: 'a', type: 'temporal'},
+          y: {field: 'b', type: 'quantitative'}
+        }
+      });
+      const root = new DataFlowNode(null);
+      const result = parseTransformArray(root, model, new AncestorParse());
+      expect(root.children[0] instanceof CountPatternTransformNode).toBe(true);
+      expect(result instanceof CountPatternTransformNode).toBe(true);
+    });
+     */
+
     it('should return a SampleTransformNode', () => {
       const transform: Transform = {
         sample: 1000

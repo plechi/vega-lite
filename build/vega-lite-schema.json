@@ -3186,6 +3186,45 @@
       },
       "type": "object"
     },
+    "CountPatternTransform": {
+      "additionalProperties": false,
+      "properties": {
+        "as": {
+          "description": "The output fields for the text pattern and occurrence count.\n__Default value:__ `[\"text\", \"count\"]`",
+          "items": [
+            {
+              "$ref": "#/definitions/FieldName"
+            },
+            {
+              "$ref": "#/definitions/FieldName"
+            }
+          ],
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        "case": {
+          "description": "A lower- or upper-case transformation to apply prior to pattern matching.\nOne of `lower`, `upper` or `mixed` (the default).\n__Default value:__ `mixed`",
+          "type": "string"
+        },
+        "field": {
+          "$ref": "#/definitions/FieldName",
+          "description": "The data field containing the text data."
+        },
+        "pattern": {
+          "description": "A string containing a well-formatted regular expression, defining a pattern to match in the text.\n__Default value:__ `[\\\\w\\']+`",
+          "type": "string"
+        },
+        "stopwords": {
+          "description": "A string containing a well-formatted regular expression, defining a pattern of text to ignore.\nFor example, the value \"(foo|bar|baz)\" will treat the words \"foo\", \"bar\" and \"baz\" as stopwords that should be\nignored. The default value is the empty string (\"\"), indicating no stop words.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "field"
+      ],
+      "type": "object"
+    },
     "CsvDataFormat": {
       "additionalProperties": false,
       "properties": {
@@ -11969,6 +12008,9 @@
         },
         {
           "$ref": "#/definitions/WindowTransform"
+        },
+        {
+          "$ref": "#/definitions/CountPatternTransform"
         }
       ]
     },

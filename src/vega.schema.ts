@@ -388,6 +388,15 @@ export interface VgIdentifierTransform {
   as: string;
 }
 
+export interface VgCountPatternTransform {
+  type: 'countpattern';
+  field: string;
+  pattern?: string;
+  case?: string;
+  stopwords?: string;
+  as?: string[];
+}
+
 export type VgTransform =
   | VgBinTransform
   | VgExtentTransform
@@ -407,7 +416,8 @@ export type VgTransform =
   | VgJoinAggregateTransform
   | VgFoldTransform
   | VgSampleTransform
-  | VgSequenceTransform;
+  | VgSequenceTransform
+  | VgCountPatternTransform;
 
 export interface VgGraticuleTransform {
   type: 'graticule';

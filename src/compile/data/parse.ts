@@ -15,6 +15,7 @@ import {
   isAggregate,
   isBin,
   isCalculate,
+  isCountPattern,
   isFilter,
   isFlatten,
   isFold,
@@ -25,7 +26,7 @@ import {
   isStack,
   isTimeUnit,
   isWindow
-} from '../../transform';
+} from "../../transform";
 import {deepEqual, mergeDeep} from '../../util';
 import {isFacetModel, isLayerModel, isUnitModel, Model} from '../model';
 import {requiresSelectionId} from '../selection';
@@ -54,6 +55,7 @@ import {SourceNode} from './source';
 import {StackNode} from './stack';
 import {TimeUnitNode} from './timeunit';
 import {WindowTransformNode} from './window';
+import {CountPatternTransformNode } from "./countpattern";
 
 export function findSource(data: Data, sources: SourceNode[]) {
   for (const other of sources) {
@@ -174,7 +176,10 @@ export function parseTransformArray(head: DataFlowNode, model: Model, ancestorPa
     } else if (isImpute(t)) {
       transformNode = head = ImputeNode.makeFromTransform(head, t);
       derivedType = 'derived';
-    } else {
+    } else if (isCountPattern(t)) {
+      transformNode = head = new CountPatternTransformNode(head, t);
+      derivedType = 'derived';
+    } else{
       log.warn(log.message.invalidTransformIgnored(t));
       continue;
     }

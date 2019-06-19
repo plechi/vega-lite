@@ -359,6 +359,41 @@ export interface FoldTransform {
   as?: [FieldName, FieldName];
 }
 
+export interface CountPatternTransform {
+
+  /**
+   * The data field containing the text data.
+   */
+  field: FieldName;
+
+  /**
+   * A string containing a well-formatted regular expression, defining a pattern to match in the text.
+   * __Default value:__ `[\\w\']+`
+   */
+  pattern?: string;
+
+  /**
+   * A lower- or upper-case transformation to apply prior to pattern matching.
+   * One of `lower`, `upper` or `mixed` (the default).
+   * __Default value:__ `mixed`
+   */
+  case?: string;
+
+  /**
+   * A string containing a well-formatted regular expression, defining a pattern of text to ignore.
+   * For example, the value "(foo|bar|baz)" will treat the words "foo", "bar" and "baz" as stopwords that should be
+   * ignored. The default value is the empty string (""), indicating no stop words.
+   */
+  stopwords?: string;
+
+  /**
+   * The output fields for the text pattern and occurrence count.
+   * __Default value:__ `["text", "count"]`
+   */
+  as?: [FieldName, FieldName];
+
+}
+
 export function isLookup(t: Transform): t is LookupTransform {
   return t['lookup'] !== undefined;
 }
@@ -406,6 +441,10 @@ export function isFold(t: Transform): t is FoldTransform {
   return t['fold'] !== undefined;
 }
 
+export function isCountPattern(t: Transform): t is CountPatternTransform {
+  return t['countpattern'] !== undefined;
+}
+
 export type Transform =
   | AggregateTransform
   | BinTransform
@@ -419,7 +458,8 @@ export type Transform =
   | TimeUnitTransform
   | SampleTransform
   | StackTransform
-  | WindowTransform;
+  | WindowTransform
+  | CountPatternTransform;
 
 export function normalizeTransform(transform: Transform[]) {
   return transform.map(t => {
