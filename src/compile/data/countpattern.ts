@@ -11,9 +11,15 @@ export class CountPatternTransformNode extends DataFlowNode {
   constructor(parent: DataFlowNode, private countPattern: CountPatternTransform) {
     super(parent);
     this.countPattern = duplicate(countPattern);
-
     //don't know why we have to do this???
-    this.countPattern=this.countPattern['countpattern'];
+    //FIXME: add multiple countpatterntransformnodes to parent
+    this.countPattern = this.countPattern['countpattern'];
+    if (Array.isArray(this.countPattern)) {
+      this.countPattern = this.countPattern[0];
+    }
+    if (this.countPattern === undefined){
+      this.countPattern = {} as CountPatternTransform;
+    }
     this.countPattern.pattern = this.countPattern.pattern || "[\\w']+";
     this.countPattern.case = this.countPattern.case || 'lowercase';
     this.countPattern.stopwords = this.countPattern.stopwords || 'test';
