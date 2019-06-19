@@ -1,0 +1,25 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+  "data": { "values":[
+    {"foo": {"a": 5, "b": "abc"}, "bar": 0},
+    {"foo": {"a": 6, "b": "def"}, "bar": 1},
+    {"foo": {"a": 7, "b": "ghi"}, "bar": 2}
+  ]},
+  "transform": [
+    {
+      "project":{
+        "fields": ["bar", "foo.a", "foo.b"],
+        "as": ["bar", "a", "b"]
+      }
+    }
+  ],
+  "mark": "bar",
+  "encoding": {
+    "x": {
+      "field": "b", "type": "ordinal"
+    },
+    "y": {
+      "field": "a", "type": "quantitative"
+    }
+  }
+}

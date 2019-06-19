@@ -26,6 +26,7 @@ import {StackNode} from './stack';
 import {TimeUnitNode} from './timeunit';
 import {WindowTransformNode} from './window';
 import { CountPatternTransformNode } from "./countpattern";
+import { ProjectTransformNode } from "./project";
 
 function makeWalkTree(data: VgData[]) {
   // to name datasources
@@ -99,7 +100,8 @@ function makeWalkTree(data: VgData[]) {
       node instanceof FlattenTransformNode ||
       node instanceof IdentifierNode ||
       node instanceof SampleTransformNode ||
-      node instanceof CountPatternTransformNode
+      node instanceof CountPatternTransformNode ||
+      node instanceof ProjectTransformNode
     ) {
       dataSource.transform.push(node.assemble());
     }

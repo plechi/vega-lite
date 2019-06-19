@@ -397,6 +397,12 @@ export interface VgCountPatternTransform {
   as?: string[];
 }
 
+export interface VgProjectTransform {
+  type: 'project';
+  fields: string[];
+  as?: string[];
+}
+
 export type VgTransform =
   | VgBinTransform
   | VgExtentTransform
@@ -417,7 +423,8 @@ export type VgTransform =
   | VgFoldTransform
   | VgSampleTransform
   | VgSequenceTransform
-  | VgCountPatternTransform;
+  | VgCountPatternTransform
+  | VgProjectTransform;
 
 export interface VgGraticuleTransform {
   type: 'graticule';

@@ -360,7 +360,6 @@ export interface FoldTransform {
 }
 
 export interface CountPatternTransform {
-
   /**
    * The data field containing the text data.
    */
@@ -391,7 +390,20 @@ export interface CountPatternTransform {
    * __Default value:__ `["text", "count"]`
    */
   as?: [FieldName, FieldName];
+}
 
+export interface ProjectTransform {
+  /**
+   * The data fields that should be copied over in the projection.
+   * If unspecified, all fields will be copied using their existing names.
+   */
+  fields: FieldName[];
+
+  /**
+   * For each corresponding field in the fields array, indicates the output
+   * field name to use for derived data objects.
+   */
+  as: FieldName[];
 }
 
 export function isLookup(t: Transform): t is LookupTransform {
@@ -445,6 +457,10 @@ export function isCountPattern(t: Transform): t is CountPatternTransform {
   return t['countpattern'] !== undefined;
 }
 
+export function isProject(t: Transform): t is ProjectTransform {
+  return t['project'] !== undefined;
+}
+
 export type Transform =
   | AggregateTransform
   | BinTransform
@@ -459,7 +475,8 @@ export type Transform =
   | SampleTransform
   | StackTransform
   | WindowTransform
-  | CountPatternTransform;
+  | CountPatternTransform
+  | ProjectTransform;
 
 export function normalizeTransform(transform: Transform[]) {
   return transform.map(t => {

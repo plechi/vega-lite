@@ -21,7 +21,7 @@ import {
   isFold,
   isImpute,
   isJoinAggregate,
-  isLookup,
+  isLookup, isProject,
   isSample,
   isStack,
   isTimeUnit,
@@ -56,6 +56,7 @@ import {StackNode} from './stack';
 import {TimeUnitNode} from './timeunit';
 import {WindowTransformNode} from './window';
 import {CountPatternTransformNode } from "./countpattern";
+import { ProjectTransformNode } from "./project";
 
 export function findSource(data: Data, sources: SourceNode[]) {
   for (const other of sources) {
@@ -179,7 +180,10 @@ export function parseTransformArray(head: DataFlowNode, model: Model, ancestorPa
     } else if (isCountPattern(t)) {
       transformNode = head = new CountPatternTransformNode(head, t);
       derivedType = 'derived';
-    } else{
+    } else if (isProject(t)) {
+      transformNode = head = new ProjectTransformNode(head, t);
+      derivedType = 'derived';
+    } else {
       log.warn(log.message.invalidTransformIgnored(t));
       continue;
     }
