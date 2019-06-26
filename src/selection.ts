@@ -2,20 +2,20 @@ import {Binding} from 'vega';
 import {SingleDefUnitChannel} from './channel';
 import {FieldName} from './channeldef';
 import {DateTime} from './datetime';
-import {EventStream} from './vega.schema';
+import {EventStream, Color} from './vega.schema';
 
 export const SELECTION_ID = '_vgsid_';
 export type SelectionType = 'single' | 'multi' | 'interval';
 export type SelectionResolution = 'global' | 'union' | 'intersect';
 
 export type SelectionInit = boolean | number | string | DateTime;
-export type SelectionInitArray = boolean[] | number[] | string[] | DateTime[];
+export type SelectionInitInterval = [boolean, boolean] | [number, number] | [string, string] | [DateTime, DateTime];
+
 export interface SelectionInitMapping {
   [key: string]: SelectionInit;
 }
-
-export interface SelectionInitArrayMapping {
-  [key: string]: SelectionInitArray;
+export interface SelectionInitIntervalMapping {
+  [key: string]: SelectionInitInterval;
 }
 
 export interface BaseSelectionDef {
@@ -136,7 +136,7 @@ export interface BrushConfig {
    * __Default value:__ `#333333`
    *
    */
-  fill?: string;
+  fill?: Color;
   /**
    * The fill opacity of the interval mark (a value between 0 and 1).
    *
@@ -148,7 +148,7 @@ export interface BrushConfig {
    *
    * __Default value:__ `#ffffff`
    */
-  stroke?: string;
+  stroke?: Color;
   /**
    * The stroke opacity of the interval mark (a value between 0 and 1).
    */
@@ -219,7 +219,7 @@ export interface IntervalSelectionConfig extends BaseSelectionDef {
    * Initialize the selection with a mapping between [projected channels or field names](https://vega.github.io/vega-lite/docs/project.html) and arrays of
    * initial values.
    */
-  init?: SelectionInitArrayMapping;
+  init?: SelectionInitIntervalMapping;
 }
 
 export interface SingleSelection extends SingleSelectionConfig {

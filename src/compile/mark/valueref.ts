@@ -3,7 +3,6 @@
  */
 import {SignalRef} from 'vega';
 import {isFunction, isString, stringValue} from 'vega-util';
-import {FieldName} from '../../channeldef';
 import {isCountingAggregateOp} from '../../aggregate';
 import {isBinned, isBinning} from '../../bin';
 import {Channel, getMainRangeChannel, PositionChannel, X, X2, Y, Y2} from '../../channel';
@@ -13,6 +12,7 @@ import {
   ChannelDefWithCondition,
   FieldDef,
   FieldDefBase,
+  FieldName,
   FieldRefOption,
   format,
   hasConditionalFieldDef,
@@ -22,6 +22,7 @@ import {
   SecondaryFieldDef,
   title,
   TypedFieldDef,
+  Value,
   vgField
 } from '../../channeldef';
 import {Config} from '../../config';
@@ -235,13 +236,17 @@ function binMidSignal({
   scaleName,
   fieldDef,
   fieldDef2,
-  offset
+  offset,
+  band
 }: {
   scaleName: string;
   fieldDef: TypedFieldDef<string>;
   fieldDef2?: SecondaryFieldDef<string>;
   offset: number;
+  band?: number;
 }) {
+  band = getFirstDefined(band, 0.5);
+
   const start = vgField(fieldDef, {expr: 'datum'});
   const end =
     fieldDef2 !== undefined
@@ -249,7 +254,7 @@ function binMidSignal({
       : vgField(fieldDef, {binSuffix: 'end', expr: 'datum'});
 
   return {
-    signal: `scale("${scaleName}", (${start} + ${end}) / 2)`,
+    signal: `scale("${scaleName}", ${band} * ${start} + ${1 - band} * ${end})`,
     ...(offset ? {offset} : {})
   };
 }
@@ -323,13 +328,7 @@ export function midPoint({
       const value = channelDef.value;
       const offsetMixins = offset ? {offset} : {};
 
-      if (contains(['x', 'x2'], channel) && value === 'width') {
-        return {field: {group: 'width'}, ...offsetMixins};
-      } else if (contains(['y', 'y2'], channel) && value === 'height') {
-        return {field: {group: 'height'}, ...offsetMixins};
-      }
-
-      return {value, ...offsetMixins};
+      return {...vgValueRef(channel, value), ...offsetMixins};
     }
 
     // If channelDef is neither field def or value def, it's a condition-only def.
@@ -337,6 +336,18 @@ export function midPoint({
   }
 
   return isFunction(defaultRef) ? defaultRef() : defaultRef;
+}
+
+/**
+ * Convert special "width" and "height" values in Vega-Lite into Vega value ref.
+ */
+function vgValueRef(channel: Channel, value: Value) {
+  if (contains(['x', 'x2'], channel) && value === 'width') {
+    return {field: {group: 'width'}};
+  } else if (contains(['y', 'y2'], channel) && value === 'height') {
+    return {field: {group: 'height'}};
+  }
+  return {value};
 }
 
 export function tooltipForEncoding(
@@ -420,7 +431,7 @@ export function positionDefault({
 
     const definedValueOrConfig = getFirstDefined(markDef[channel], getMarkConfig(channel, markDef, config));
     if (definedValueOrConfig !== undefined) {
-      return {value: definedValueOrConfig};
+      return vgValueRef(channel, definedValueOrConfig);
     }
 
     if (isString(defaultRef)) {

@@ -249,8 +249,25 @@ describe('Mark', () => {
         }
       });
       expect(getSort(model)).toEqual({
-        field: 'datum["bin_maxbins_10_IMDB_Rating"]',
-        order: 'descending'
+        field: 'datum["bin_maxbins_10_IMDB_Rating"]'
+      });
+    });
+
+    it("should order by x's custom sort order by default if x is the dimension", () => {
+      const model = parseUnitModelWithScale({
+        data: {url: 'data/movies.json'},
+        mark: 'line',
+        encoding: {
+          x: {
+            type: 'nominal',
+            field: 'Name',
+            sort: ['Peter', 'Mary', 'Paul']
+          },
+          y: {type: 'quantitative', field: 'Score'}
+        }
+      });
+      expect(getSort(model)).toEqual({
+        field: 'datum["x_Name_sort_index"]'
       });
     });
 

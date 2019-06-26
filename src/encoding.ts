@@ -1,7 +1,7 @@
 import {AggregateOp} from 'vega';
 import {isArray} from 'vega-util';
 import {isArgmaxDef, isArgminDef} from './aggregate';
-import {isBinning} from './bin';
+import {isBinned, isBinning} from './bin';
 import {Channel, CHANNELS, isChannel, isNonPositionScaleChannel, isSecondaryRangeChannel, supportMark} from './channel';
 import {
   binRequiresRange,
@@ -50,21 +50,21 @@ export interface Encoding<F extends Field> {
   /**
    * X coordinates of the marks, or width of horizontal `"bar"` and `"area"` without `x2`.
    *
-   * The `value` of this channel can be a number or a string `"width"`.
+   * The `value` of this channel can be a number or a string `"width"` for the width of the plot.
    */
   x?: PositionFieldDef<F> | ValueDef<number | 'width'>;
 
   /**
    * Y coordinates of the marks, or height of vertical `"bar"` and `"area"` without `y2`
    *
-   * The `value` of this channel can be a number or a string `"height"`.
+   * The `value` of this channel can be a number or a string `"height"` for the height of the plot.
    */
   y?: PositionFieldDef<F> | ValueDef<number | 'height'>;
 
   /**
    * X2 coordinates for ranged `"area"`, `"bar"`, `"rect"`, and  `"rule"`.
    *
-   * The `value` of this channel can be a number or a string `"width"`.
+   * The `value` of this channel can be a number or a string `"width"` for the width of the plot.
    */
   // TODO: Ham need to add default behavior
   // `x2` cannot have type as it should have the same type as `x`
@@ -73,7 +73,7 @@ export interface Encoding<F extends Field> {
   /**
    * Y2 coordinates for ranged `"area"`, `"bar"`, `"rect"`, and  `"rule"`.
    *
-   * The `value` of this channel can be a number or a string `"height"`.
+   * The `value` of this channel can be a number or a string `"height"` for the height of the plot.
    */
   // TODO: Ham need to add default behavior
   // `y2` cannot have type as it should have the same type as `y`
@@ -296,43 +296,43 @@ export function extractTransformsFromEncoding(oldEncoding: Encoding<Field>, conf
             }
             aggregate.push(aggregateEntry);
           }
-        } else if (isTypedFieldDef(channelDef) && isBinning(bin)) {
-          bins.push({bin, field, as: newField});
-          // Add additional groupbys for range and end of bins
-          groupby.push(vgField(channelDef, {binSuffix: 'end'}));
-          if (binRequiresRange(channelDef, channel)) {
-            groupby.push(vgField(channelDef, {binSuffix: 'range'}));
-          }
-          // Create accompanying 'x2' or 'y2' field if channel is 'x' or 'y' respectively
-          if (isPositionChannel) {
-            const secondaryChannel: SecondaryFieldDef<string> = {
-              field: newField + '_end'
-            };
-            encoding[channel + '2'] = secondaryChannel;
-          }
-          newFieldDef.bin = 'binned';
-          if (!isSecondaryRangeChannel(channel)) {
-            newFieldDef['type'] = 'quantitative';
-          }
-        } else if (timeUnit) {
-          timeUnits.push({timeUnit, field, as: newField});
-
-          // Add formatting to appropriate property based on the type of channel we're processing
-          const format = getDateTimeComponents(timeUnit, config.axis.shortTimeLabels).join(' ');
-          const formatType = isTypedFieldDef(channelDef) && channelDef.type !== TEMPORAL && 'time';
-          if (channel === 'text' || channel === 'tooltip') {
-            newFieldDef['format'] = newFieldDef['format'] || format;
-            if (formatType) {
-              newFieldDef['formatType'] = formatType;
-            }
-          } else if (isNonPositionScaleChannel(channel)) {
-            newFieldDef['legend'] = {format, ...(formatType ? {formatType} : {}), ...newFieldDef['legend']};
-          } else if (isPositionChannel) {
-            newFieldDef['axis'] = {format, ...(formatType ? {formatType} : {}), ...newFieldDef['axis']};
-          }
-        }
-        if (!aggOp) {
+        } else {
           groupby.push(newField);
+          if (isTypedFieldDef(channelDef) && isBinning(bin)) {
+            bins.push({bin, field, as: newField});
+            // Add additional groupbys for range and end of bins
+            groupby.push(vgField(channelDef, {binSuffix: 'end'}));
+            if (binRequiresRange(channelDef, channel)) {
+              groupby.push(vgField(channelDef, {binSuffix: 'range'}));
+            }
+            // Create accompanying 'x2' or 'y2' field if channel is 'x' or 'y' respectively
+            if (isPositionChannel) {
+              const secondaryChannel: SecondaryFieldDef<string> = {
+                field: newField + '_end'
+              };
+              encoding[channel + '2'] = secondaryChannel;
+            }
+            newFieldDef.bin = 'binned';
+            if (!isSecondaryRangeChannel(channel)) {
+              newFieldDef['type'] = 'quantitative';
+            }
+          } else if (timeUnit) {
+            timeUnits.push({timeUnit, field, as: newField});
+
+            // Add formatting to appropriate property based on the type of channel we're processing
+            const format = getDateTimeComponents(timeUnit, config.axis.shortTimeLabels).join(' ');
+            const formatType = isTypedFieldDef(channelDef) && channelDef.type !== TEMPORAL && 'time';
+            if (channel === 'text' || channel === 'tooltip') {
+              newFieldDef['format'] = newFieldDef['format'] || format;
+              if (formatType) {
+                newFieldDef['formatType'] = formatType;
+              }
+            } else if (isNonPositionScaleChannel(channel)) {
+              newFieldDef['legend'] = {format, ...(formatType ? {formatType} : {}), ...newFieldDef['legend']};
+            } else if (isPositionChannel) {
+              newFieldDef['axis'] = {format, ...(formatType ? {formatType} : {}), ...newFieldDef['axis']};
+            }
+          }
         }
         // now the field should refer to post-transformed field instead
         encoding[channel] = newFieldDef;
@@ -364,7 +364,7 @@ export function markChannelCompatible(encoding: Encoding<string>, channel: Chann
 
     // circle, point, square and tick only support x2/y2 when their corresponding x/y fieldDef
     // has "binned" data and thus need x2/y2 to specify the bin-end field.
-    if (isFieldDef(primaryFieldDef) && isFieldDef(encoding[channel]) && primaryFieldDef.bin === 'binned') {
+    if (isFieldDef(primaryFieldDef) && isFieldDef(encoding[channel]) && isBinned(primaryFieldDef.bin)) {
       return true;
     } else {
       return false;

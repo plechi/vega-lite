@@ -1,25 +1,69 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
-  "data": { "values":[
-    {"foo": {"a": 5, "b": "abc"}, "bar": 0},
-    {"foo": {"a": 6, "b": "def"}, "bar": 1},
-    {"foo": {"a": 7, "b": "ghi"}, "bar": 2}
-  ]},
+  "data": {
+    "values": [
+      {
+        "standing": {
+          "rank": 1,
+          "points": 1558
+        },
+        "name": "HIRSCHER Marcel"
+      },
+      {
+        "standing": {
+          "rank": 2,
+          "points": 1233
+        },
+        "name": "PINTURAULT Alexis"
+      },
+      {
+        "standing": {
+          "rank": 3,
+          "points": 1119
+        },
+        "name": "PARIS Dominik"
+      }
+    ]
+  },
   "transform": [
     {
-      "project":{
-        "fields": ["bar", "foo.a", "foo.b"],
-        "as": ["bar", "a", "b"]
+      "project": {
+        "fields": [
+          "name",
+          "standing.points"
+        ],
+        "as": [
+          "name",
+          "points"
+        ]
       }
     }
   ],
   "mark": "bar",
   "encoding": {
     "x": {
-      "field": "b", "type": "ordinal"
+      "field": "name",
+      "type": "ordinal",
+      "sort": {
+        "encoding": "y",
+        "order": "descending"
+      }
     },
     "y": {
-      "field": "a", "type": "quantitative"
+      "field": "points",
+      "type": "quantitative"
     }
-  }
+  },
+{
+  "name": "Paul", "week": 83, "sumCandidates": 2
+},{
+  "name": "Paul", "week": 40, "sumCandidates": 2
+},{
+  "name": "Rubio", "week": 83, "sumCandidates": 3
+},{
+  "name": "Rubio", "week": 40, "sumCandidates": 3
+},{
+  "name": "Rubio", "week": 39, "sumCandidates": 2
 }
+}
+

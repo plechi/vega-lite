@@ -193,7 +193,7 @@
         "title": "Line Charts Showing Ranks Over Time"
       },
       {
-        "name": "sequence_line",
+        "name": "sequence_line_fold",
         "title": "Drawing Sine and Cosine Curves with the Sequence Generator"
       }
     ],
@@ -614,6 +614,10 @@
       {
         "name": "selection_heatmap",
         "title": "Selectable Heatmap"
+      },
+      {
+        "name": "bar_count_minimap",
+        "title": "Bar chart with a minimap"
       }
     ],
     "Interactive Multi-View Displays": [

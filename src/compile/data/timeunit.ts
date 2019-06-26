@@ -1,16 +1,12 @@
 import {vgField} from '../../channeldef';
-import {fieldExpr, TimeUnit} from '../../timeunit';
+import {fieldExpr} from '../../timeunit';
 import {TimeUnitTransform} from '../../transform';
 import {Dict, duplicate, hash, keys, vals} from '../../util';
 import {VgFormulaTransform} from '../../vega.schema';
 import {ModelWithField} from '../model';
 import {DataFlowNode} from './dataflow';
 
-export interface TimeUnitComponent {
-  as: string;
-  timeUnit: TimeUnit;
-  field: string;
-}
+export type TimeUnitComponent = TimeUnitTransform;
 
 export class TimeUnitNode extends DataFlowNode {
   public clone() {
@@ -24,13 +20,10 @@ export class TimeUnitNode extends DataFlowNode {
   public static makeFromEncoding(parent: DataFlowNode, model: ModelWithField) {
     const formula = model.reduceFieldDef(
       (timeUnitComponent: TimeUnitComponent, fieldDef) => {
-        if (fieldDef.timeUnit) {
+        const {timeUnit, field} = fieldDef;
+        if (timeUnit) {
           const as = vgField(fieldDef, {forAs: true});
-          const component = {
-            as: as,
-            timeUnit: fieldDef.timeUnit,
-            field: fieldDef.field
-          };
+          const component = {as, timeUnit, field};
           timeUnitComponent[hash(component)] = component;
         }
         return timeUnitComponent;
@@ -46,11 +39,7 @@ export class TimeUnitNode extends DataFlowNode {
   }
 
   public static makeFromTransform(parent: DataFlowNode, t: TimeUnitTransform) {
-    const component = {
-      as: t.as,
-      timeUnit: t.timeUnit,
-      field: t.field
-    };
+    const component = {...t};
 
     return new TimeUnitNode(parent, {
       [hash(component)]: component

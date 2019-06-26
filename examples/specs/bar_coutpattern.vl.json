@@ -1,27 +1,27 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
   "data": { "values":[
-    {"comment": "between 12 and 12.43"},
-    {"comment": "43 minutes past 12 o'clock (and 13 seconds)"}
-  ]},
-  "transform": [
-    {
-      "countpattern":{
-        "field": "comment",
-        "pattern": "\\d+",
-        "stopwords": "13",
-        "case": "lower",
-        "as": ["text", "count"]
-      }
+      {"comment": "between 12 and 12.43"},
+      {"comment": "43 min past 12 (and 13.5 seconds)"}
+    ]
+  },
+"transform": [
+  {
+    "countpattern": {
+      "field": "comment",
+      "pattern": "\\d+",
+      "stopwords": "(13|5)"
     }
-  ],
+  }
+],
   "mark": "bar",
   "encoding": {
-    "x": {
-      "field": "text", "type": "ordinal"
-    },
     "y": {
       "field": "count", "type": "quantitative"
+    },
+    "x": {
+      "field": "text", "type": "ordinal"
     }
+
   }
 }

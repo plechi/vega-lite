@@ -94,11 +94,18 @@ export function getSort(model: UnitModel): VgCompare {
     return sortParams(order, {expr: 'datum'});
   } else if (isPathMark(mark)) {
     // For both line and area, we sort values based on dimension by default
-    const dimensionChannelDef = encoding[markDef.orient === 'horizontal' ? 'y' : 'x'];
+    const dimensionChannel = markDef.orient === 'horizontal' ? 'y' : 'x';
+    const dimensionChannelDef = encoding[dimensionChannel];
     if (isFieldDef(dimensionChannelDef)) {
       const s = dimensionChannelDef.sort;
-      const sortField = isSortField(s)
-        ? vgField(
+
+      if (isArray(s)) {
+        return {
+          field: vgField(dimensionChannelDef, {prefix: dimensionChannel, suffix: 'sort_index', expr: 'datum'})
+        };
+      } else if (isSortField(s)) {
+        return {
+          field: vgField(
             {
               // FIXME: this op might not already exist?
               // FIXME: what if dimensionChannel (x or y) contains custom domain?
@@ -107,16 +114,16 @@ export function getSort(model: UnitModel): VgCompare {
             },
             {expr: 'datum'}
           )
-        : vgField(dimensionChannelDef, {
+        };
+      } else {
+        return {
+          field: vgField(dimensionChannelDef, {
             // For stack with imputation, we only have bin_mid
             binSuffix: model.stack && model.stack.impute ? 'mid' : undefined,
             expr: 'datum'
-          });
-
-      return {
-        field: sortField,
-        order: 'descending'
-      };
+          })
+        };
+      }
     }
     return undefined;
   }
